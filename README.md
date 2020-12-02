@@ -1,2 +1,2 @@
 # php-example
-Our API used by PHP.
+Our API used by basic PHP example.
