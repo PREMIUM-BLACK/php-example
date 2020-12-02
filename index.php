@@ -1,7 +1,7 @@
 <?php
 
-	require "api.php";
-	require "classes.php";
+	require "libs/api.php";
+	require "libs/classes.php";
 
 	$api = new payAPI();
 

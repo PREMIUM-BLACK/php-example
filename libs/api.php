@@ -106,7 +106,7 @@
     			CURLOPT_HTTPHEADER => array(
         		"Content-Type:application/json; charset=utf-8",
         		"Content-Length:".strlen($jsonObject)));
-echo $url;
+
     		$defaults = array( 
         		CURLOPT_POST => 1, 
         		CURLOPT_HEADER => 0, 
@@ -178,17 +178,16 @@ echo $url;
 		ksort($members);
 
 		$s = "";
-		$hash = "";
+		$hash = $data->Hash;
 
 		foreach($members as $m=>$v)
 		{
-			if($m=='Hash')
+			if($m =='Hash')
 			{
-				$hash = $v;
 				continue;
 			}
 
-			if($v==null)
+			if($v == null)
 				continue;
 
 			if(is_object($v))

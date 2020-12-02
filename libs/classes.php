@@ -31,7 +31,9 @@ class GetTransactionDetailsRequest
 	public $Hash = "";
 
 	public $TransactionId = "";
-	public 	$TransactionKey = "";
+	public $TransactionKey = "";
+	
+	public $ReturnQRCode = "false";
 	
 }
 
