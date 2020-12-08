@@ -141,12 +141,12 @@
 
 		$members = get_object_vars($data);
 		
-		ksort($members);
+		uksort($members, "strnatcasecmp");
 
 		$s = "";
 
 		foreach($members as $m=>$v)
-		{
+		{		
 			if($m=='Hash')
 				continue;
 
@@ -158,7 +158,7 @@
 
 			$s .= $v;
 		}
-		
+				
 		return hash('sha256', $s . $privateKey);
 	}
 
@@ -175,7 +175,7 @@
 
 		$members = get_object_vars($data);
 		
-		ksort($members);
+		uksort($members, "strnatcasecmp");
 
 		$s = "";
 		$hash = $data->Hash;
