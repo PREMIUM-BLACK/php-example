@@ -1,92 +1,93 @@
 <?php
 
-	require "libs/api.php";
-	require "libs/classes.php";
+require 'libs/config.php';
+require 'libs/api.php';
+require 'libs/classes.php';
 
-	$api = new payAPI();
+$api = new payAPI($debugService);
+// $api->setServiceUrl($serviceUrl);
+$api->setPublicKey($privateKey);
+$api->setPrivateKey($publicKey);
 
-	$response = null;
+$response = null;
 
-	$request = new IsTransactionConfirmedRequest();
+$request = new IsTransactionConfirmedRequest();
 
-	$request->TransactionId = "K1FLV3M7SL3VJ60LRCUX";
-	$request->TransactionKey = "TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ";
-	
-	$response = $api->IsTransactionConfirmed($publicKey, $request);
+$request->TransactionId = 'K1FLV3M7SL3VJ60LRCUX';
+$request->TransactionKey = 'TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ';
 
-	print_r($response);
+$response = $api->IsTransactionConfirmed($request);
 
-	if(!$api->checkHash($response))
-	{
-		throw new Exception('Response is malformed/manipulated.');
-	}
+print_r($response);
 
+if (!$api->checkHash($response))
+{
+    throw new Exception('Response is malformed/manipulated.');
+}
 
 return;
-	$request = new CreateTransactionRequest();
-	
-	$request->Amount = 1000;
-	$request->Currency = "btc";
-	$request->PriceCurrency = "eur";
-	$request->IPN = "NO_IPN";
-	$request->BlockAddress ="true";
-	
-	//Add custom User Id for accounting
-	$request->CustomUserId = "1234";
 
-	//Add custom Order Id for accounting
-	$request->CustomOrderId = "24";
+$request = new CreateTransactionRequest();
 
-	//Add customer mail address for accounting
-	$request->CustomerMail = "me@mail.com";
+$request->Amount = 1000;
+$request->Currency = 'btc';
+$request->PriceCurrency = 'eur';
+$request->IPN = 'NO_IPN';
+$request->BlockAddress = 'true';
 
-	//Anything else you want to link with this transaction
-	$request->CustomData = "186ebff2-b319-49ed-a18f-dcbb27c9e9dd";
-	
-	$response = $api->CreateTransaction($publicKey, $request);
-	
-	if(!$api->checkHash($response))
-	{
-		throw new Exception('Response is malformed/manipulated.');
-	}
+//Add custom User Id for accounting
+$request->CustomUserId = '1234';
 
-	$request = new GetTransactionDetailsRequest();
+//Add custom Order Id for accounting
+$request->CustomOrderId = '24';
 
-	$request->TransactionId = "K1FLV3M7SL3VJ60LRCUX";
-	$request->TransactionKey = "TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ";
+//Add customer mail address for accounting
+$request->CustomerMail = 'me@mail.com';
 
-	//$response = $api->GetTransactionDetails($publicKey, $request);	
+//Anything else you want to link with this transaction
+$request->CustomData = '186ebff2-b319-49ed-a18f-dcbb27c9e9dd';
 
-	if(!$api->checkHash($response))
-	{
-		throw new Exception('Response is malformed/manipulated.');
-	}
+$response = $api->CreateTransaction($request);
 
-	$request = new ReOpenTransactionRequest();
+if (!$api->checkHash($response))
+{
+    throw new Exception('Response is malformed/manipulated.');
+}
 
-	$request->TransactionId = "K1FLV3M7SL3VJ60LRCUX";
-	$request->TransactionKey = "TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ";
+$request = new GetTransactionDetailsRequest();
 
-	//$response = $api->ReOpenTransaction($publicKey, $request);	
+$request->TransactionId = 'K1FLV3M7SL3VJ60LRCUX';
+$request->TransactionKey = 'TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ';
 
-	if(!$api->checkHash($response))
-	{
-		throw new Exception('Response is malformed/manipulated.');
-	}
+//$response = $api->GetTransactionDetails($request);	
 
-	$request = new CancelTransactionRequest();
+if (!$api->checkHash($response))
+{
+    throw new Exception('Response is malformed/manipulated.');
+}
 
-	$request->TransactionId = "K1FLV3M7SL3VJ60LRCUX";
-	$request->TransactionKey = "TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ";
-	//Note if the customer has canceled the transaction
-	$request->ByCustomer = "false";
+$request = new ReOpenTransactionRequest();
 
-	//$response = $api->CancelTransaction($publicKey, $request);	
+$request->TransactionId = 'K1FLV3M7SL3VJ60LRCUX';
+$request->TransactionKey = 'TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ';
 
-	if(!$api->checkHash($response))
-	{
-		throw new Exception('Response is malformed/manipulated.');
-	}
+//$response = $api->ReOpenTransaction($request);	
 
+if (!$api->checkHash($response))
+{
+    throw new Exception('Response is malformed/manipulated.');
+}
 
-?>
+$request = new CancelTransactionRequest();
+
+$request->TransactionId = 'K1FLV3M7SL3VJ60LRCUX';
+$request->TransactionKey = 'TR0P895V89753ZN6Q07RT6DY5C3UUAQXT9MVX104O6I40L6MVZ';
+//Note if the customer has canceled the transaction
+$request->ByCustomer = 'false';
+
+//$response = $api->CancelTransaction($request);	
+
+if (!$api->checkHash($response))
+{
+    throw new Exception('Response is malformed/manipulated.');
+}

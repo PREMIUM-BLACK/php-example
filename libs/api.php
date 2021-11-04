@@ -1,205 +1,193 @@
 <?php
 
-	require "config.php";
+class payAPI
+{
+    protected string $publicKey;
+    protected string $privateKey;
+    protected bool $debugService;
+    protected string $serviceUrl = 'https://premium.black/service/rest/Pay.svc';
 
-	class payAPI
-	{
+    public function __construct(bool $debugService = false)
+    {
+        $this->debugService = $debugService;
+    }
 
-	function IsTransactionConfirmed($publicKey, $request)
-	{
-		global $serviceUrl;
+    public function setDebugService(string $debugService): void
+    {
+        $this->debugService = $debugService;
+    }
 
-		$r = new stdClass();
+    public function setPublicKey(string $publicKey): void
+    {
+        $this->publicKey = $publicKey;
+    }
 
-		$r->publicKey = $publicKey;
-		$r->request = $request;
-		
-		$url = $serviceUrl . "/IsTransactionConfirmed"; 
+    public function setPrivateKey(string $privateKey): void
+    {
+        $this->privateKey = $privateKey;
+    }
 
-		return $this->doPost($r,$url);
-	}
+    public function setServiceUrl(string $serviceUrl): void
+    {
+        $this->serviceUrl = $serviceUrl;
+    }
 
-	function CreateTransaction($publicKey, $request)
-	{
-		global $serviceUrl;
+    protected function buildUrl(string $suffix): string
+    {
+        return "$this->serviceUrl/$suffix";
+    }
 
-		$r = new stdClass();
+    public function IsTransactionConfirmed(IsTransactionConfirmedRequest $request): ?object
+    {
+        $r = new stdClass();
 
-		$r->publicKey = $publicKey;
-		$r->request = $request;
+        $r->publicKey = $this->publicKey;
+        $r->request = $request;
 
-		$url = $serviceUrl . "/CreateTransaction"; 
+        $url = $this->buildUrl('IsTransactionConfirmed');
 
-    		return $this->doPost($r,$url);
-	}
+        return $this->doPost($r, $url);
+    }
 
-	function GetTransactionDetails($publicKey, $request)
-	{
-		global $serviceUrl;
+    public function CreateTransaction(CreateTransactionRequest $request): ?object
+    {
+        $r = new stdClass();
 
-		$r = new stdClass();
+        $r->publicKey = $this->publicKey;
+        $r->request = $request;
 
-		$r->publicKey = $publicKey;
-		$r->request = $request;
+        $url = $this->buildUrl('CreateTransaction');
 
-		$url = $serviceUrl . "/GetTransactionDetails"; 
+        return $this->doPost($r, $url);
+    }
 
-    		return $this->doPost($r,$url);
-	}
+    public function GetTransactionDetails(GetTransactionDetailsRequest $request): ?object
+    {
+        $r = new stdClass();
 
-	function GetRate($publicKey, $request)
-	{
-		global $serviceUrl;
+        $r->publicKey = $this->publicKey;
+        $r->request = $request;
 
-		$r = new stdClass();
+        $url = $this->buildUrl('GetTransactionDetails');
 
-		$r->publicKey = $publicKey;
-		$r->request = $request;
+        return $this->doPost($r, $url);
+    }
 
-		$url = $serviceUrl . "/GetRate"; 
+    public function GetRate(?object $request): ?object
+    {
+        $r = new stdClass();
 
-    		return $this->doPost($r,$url);
-	}
+        $r->publicKey = $this->publicKey;
+        $r->request = $request;
 
-	function ReOpenTransaction($publicKey, $request)
-	{
-		global $serviceUrl;
+        $url = $this->buildUrl('GetRate');
 
-		$r = new stdClass();
+        return $this->doPost($r, $url);
+    }
 
-		$r->publicKey = $publicKey;
-		$r->request = $request;
+    public function ReOpenTransaction(ReOpenTransactionRequest $request): ?object
+    {
+        $r = new stdClass();
 
-		$url = $serviceUrl . "/ReOpenTransaction"; 
+        $r->publicKey = $this->publicKey;
+        $r->request = $request;
 
-    		return $this->doPost($r,$url);
-	}
+        $url = $this->buildUrl('ReOpenTransaction');
 
-	function CancelTransaction($publicKey, $request)
-	{
-		global $serviceUrl;
+        return $this->doPost($r, $url);
+    }
 
-		$r = new stdClass();
+    public function CancelTransaction(CancelTransactionRequest $request): ?object
+    {
+        $r = new stdClass();
 
-		$r->publicKey = $publicKey;
-		$r->request = $request;
+        $r->publicKey = $this->publicKey;
+        $r->request = $request;
 
-		$url = $serviceUrl . "/CancelTransaction"; 
+        $url = $this->buildUrl('CancelTransaction');
 
-    		return $this->doPost($r,$url);
-	}
+        return $this->doPost($r, $url);
+    }
 
-	function doPost($data, $url)
-	{
-		global $debugService;
+    public function doPost(object $data, string $url): ?object
+    {
+        $data->request->Hash = $this->hashData($data->request);
 
-		$url = $url; 
+        if ($this->debugService)
+        {
+            var_dump($data);
+        }
 
-		$data->request->Hash = $this->hashData($data->request);
+        $jsonObject = json_encode($data);
 
-		if($debugService)
-			var_dump($data);
+        $options = [
+            CURLOPT_HTTPHEADER => [
+                'Content-Type:application/json; charset=utf-8',
+                'Content-Length:' . strlen($jsonObject)
+            ],
+        ];
 
-		$jsonObject = json_encode($data);
+        $defaults = [
+            CURLOPT_POST => 1,
+            CURLOPT_HEADER => 0,
+            CURLOPT_URL => $url,
+            CURLOPT_FRESH_CONNECT => 1,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_FORBID_REUSE => 1,
+            CURLOPT_TIMEOUT => 4,
+            CURLOPT_POSTFIELDS => $jsonObject
+        ];
 
-    		$options = array(
-    			CURLOPT_HTTPHEADER => array(
-        		"Content-Type:application/json; charset=utf-8",
-        		"Content-Length:".strlen($jsonObject)));
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt_array($ch, ($options + $defaults));
+        $response = curl_exec($ch);
+        curl_close($ch);
 
-    		$defaults = array( 
-        		CURLOPT_POST => 1, 
-        		CURLOPT_HEADER => 0, 
-        		CURLOPT_URL => $url, 
-        		CURLOPT_FRESH_CONNECT => 1, 
-        		CURLOPT_RETURNTRANSFER => 1, 
-        		CURLOPT_FORBID_REUSE => 1, 
-        		CURLOPT_TIMEOUT => 4, 
-        		CURLOPT_POSTFIELDS => $jsonObject
-   		); 
+        if ($this->debugService)
+        {
+            print("<br /><br />");
 
-    		$ch = curl_init(); 
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    		curl_setopt_array($ch, ($options + $defaults)); 
-    		$response = curl_exec($ch);
-    		curl_close($ch); 
-		
+            var_dump(json_decode($response));
+        }
 
-		if($debugService){		
-			print("<br /><br />");
+        return json_decode($response);
+    }
 
-			var_dump(json_decode($response));
-		}
+    public function hashData(?object $data): string
+    {
+        $members = get_object_vars($data);
 
-		return json_decode($response);
-	}
+        uksort($members, 'strnatcasecmp');
 
-	function hashData($data)
-	{
-		global $publicKey;
-		global $privateKey;
+        $s = '';
 
-		$members = get_object_vars($data);
-		
-		uksort($members, "strnatcasecmp");
+        foreach ($members as $m => $v)
+        {
+            if ($m == 'Hash')
+                continue;
 
-		$s = "";
+            if ($v == null)
+                continue;
 
-		foreach($members as $m=>$v)
-		{		
-			if($m=='Hash')
-				continue;
+            if (is_object($v))
+                continue;
 
-			if($v==null)
-				continue;
+            $s .= $v;
+        }
 
-			if(is_object($v))
-				continue;
+        return hash('sha256', $s . $this->privateKey);
+    }
 
-			$s .= $v;
-		}
-				
-		return hash('sha256', $s . $privateKey);
-	}
+    public function checkHash(?object $data): bool
+    {
+        if ($data == null || $data->Hash == null)
+        {
+            return true;
+        }
 
-	function checkHash($data)
-	{
-		if($data==null)
-			return true;
+        $hash = $data->Hash;
 
-		if($data->Hash==null)
-			return true;
-	
-		global $publicKey;
-		global $privateKey;
-
-		$members = get_object_vars($data);
-		
-		uksort($members, "strnatcasecmp");
-
-		$s = "";
-		$hash = $data->Hash;
-
-		foreach($members as $m=>$v)
-		{
-			if($m =='Hash')
-			{
-				continue;
-			}
-
-			if($v == null)
-				continue;
-
-			if(is_object($v))
-				continue;
-
-			$s .= $v;
-		}
-		
-		return hash('sha256', $s . $privateKey) == $hash;
-	}
-
-
-	}
-
-?>
+        return $this->hashData($data) == $hash;
+    }
+}
