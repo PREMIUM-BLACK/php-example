@@ -2,21 +2,21 @@
 
 class IsTransactionConfirmedRequest
 {
-    public $Hash = "";
+    public $Hash = '';
 
-    public $TransactionId = "";
-    public $TransactionKey = "";
+    public $TransactionId = '';
+    public $TransactionKey = '';
 }
 
 class CreateTransactionRequest
 {
-    public $Hash = "";
+    public $Hash = '';
 
-    public $Currency = "";
-    public $Amount = "";
-    public $PriceCurrency = "";
-    public $IPN = "";
-    public $BlockAddress = "";
+    public $Currency = '';
+    public $Amount = '';
+    public $PriceCurrency = '';
+    public $IPN = '';
+    public $BlockAddress = '';
 
     public $CustomData;
     public $CustomUserId;
@@ -26,27 +26,27 @@ class CreateTransactionRequest
 
 class GetTransactionDetailsRequest
 {
-    public $Hash = "";
+    public $Hash = '';
 
-    public $TransactionId = "";
-    public $TransactionKey = "";
+    public $TransactionId = '';
+    public $TransactionKey = '';
 
-    public $ReturnQRCode = false;
+    public $ReturnQRCode = 'false';
 }
 
 class ReOpenTransactionRequest
 {
-    public $Hash = "";
+    public $Hash = '';
 
-    public $TransactionId = "";
-    public $TransactionKey = "";
+    public $TransactionId = '';
+    public $TransactionKey = '';
 }
 
 class CancelTransactionRequest
 {
-    public $Hash = "";
+    public $Hash = '';
 
-    public $TransactionId = "";
-    public $TransactionKey = "";
-    public $ByCustomer = false;
+    public $TransactionId = '';
+    public $TransactionKey = '';
+    public $ByCustomer = 'false';
 }
