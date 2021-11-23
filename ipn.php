@@ -1,18 +1,13 @@
 <?php
 
-	$transaction = $_GET["tx"];
+$transaction = $_GET['tx'];
+$action = $_GET['action'];
 
-	$action = $_GET["action"];
+if ($transaction == null | $action == null)
+{
+	echo 'Invalid data';
+	return;
+}
 
-
-	if($transaction==null | $action==null)
-	{
-		echo "Invalid data";
-		return;
-	}
-
-	echo "Transaction: " . $transaction;
-	echo "<br />Action: " . $action;
-
-
-?>
+echo "Transaction: $transaction";
+echo "<br />Action: $action";
