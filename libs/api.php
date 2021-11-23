@@ -5,14 +5,10 @@ class payAPI
     protected string $publicKey;
     protected string $privateKey;
     protected bool $debugService;
+    protected ?string $environment = null;
     protected string $serviceUrl = 'https://premium.black/service/rest/Pay.svc';
 
     public function __construct(bool $debugService = false)
-    {
-        $this->debugService = $debugService;
-    }
-
-    public function setDebugService(string $debugService): void
     {
         $this->debugService = $debugService;
     }
@@ -26,6 +22,12 @@ class payAPI
     {
         $this->privateKey = $privateKey;
     }
+
+    public function setEnvironment(string $environment): void
+    {
+        $this->environment = $environment;
+    }
+
 
     public function setServiceUrl(string $serviceUrl): void
     {
@@ -117,6 +119,8 @@ class payAPI
         {
             var_dump($data);
         }
+
+        $data->Environment = $this->environment;
 
         $jsonObject = json_encode($data);
 
